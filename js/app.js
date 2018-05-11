@@ -1,7 +1,7 @@
 /*
  * Create a list that holds all of your cards
  */
- //Infos à choper
+ //Some variables
 const start_overlay=document.querySelector('#overlay');
 const liste=document.querySelectorAll('.card');
 const deck=document.querySelector('.deck');
@@ -23,38 +23,35 @@ start_overlay.addEventListener('click', function(){
 
 //On the game
 deck.addEventListener('click', function(event){
-  if (event.target.nodeName === 'DIV') {
-    let image=event.target.children[0];
-    console.log(image);
-    image.classList.add("flip");
-  let parentCard=event.target.parentNode;
-  event.target.classList.add("frontflip");
+  if (event.target.nodeName === 'IMG') { // to change with 'DIV' if you hide the img
+  let parentCard=event.target.parentNode; // get the parent Node
+  event.target.classList.add("frontflip"); // flip effect
   //visib=parentCard.children[1].children[0];
   //console.log(visib);
   //visib.style.visibility= "visible";
   console.log(parentCard);
-  altCard=parentCard.children[0].alt;
+  altCard=parentCard.children[0].alt; // get the alt attribute
   cardProp=parentCard.parentNode;
-  openProp.push(cardProp);
-  openCard.push(altCard);
+  openProp.push(cardProp); // put the card in an array
+  openCard.push(altCard); // put the alt attribute in an array
   console.log(openCard);
-        if (openCard.length !== 'undefined' && openCard.length > 1) {
-            if (openCard[0]===openCard[1]) {
+        if (openCard.length !== 'undefined' && openCard.length > 1) { // if user selected 2 cards
+            if (openCard[0]===openCard[1]) { // if they have the same alt
               console.log(cardProp);
-              openProp[0].classList="card match cardwin";
-              openProp[1].className="card match cardwin";
-              openProp=[];
-              openCard=[];
+              openProp[0].classList="card match cardwin"; //change class
+              openProp[1].className="card match cardwin"; // change class
+              openProp=[]; // clear array
+              openCard=[]; // clear array
             }
-            else {
-              openProp[0].className="card front backflip";
-              openProp[1].className="card front backflip";
+            else { //if different
+              openProp[0].className="card front backflip"; // go back to the initial position
+              openProp[1].className="card front backflip"; // go back to the initial position
               openProp=[];
               openCard=[];
             }
           }
-          else {
-            cardProp.className="card open";
+          else { // if only one card is selected
+            cardProp.className="card open"; // change class
           }
       }});
 
