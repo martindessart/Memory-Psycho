@@ -148,7 +148,7 @@ deck.addEventListener('click', function(event){
 //MOVING FUNCTION
 function moving(){
   //end the game if all moves are done
-  if (move===40){
+  if (move===50){
     stars[0].firstElementChild.classList.remove("fa-star");
     loseGame();
   }
@@ -158,19 +158,19 @@ function moving(){
     moves.textContent=move;
     //console.log("tu as fait "+move+" coup(s)");
     //take off stars for numbers of move
-    if (move===1){
+    if (move===10){
       stars[4].firstElementChild.classList.remove("fa-star");
       star-=1;
     }
-    if (move===2){
+    if (move===20){
       stars[3].firstElementChild.classList.remove("fa-star");
       star-=1;
     }
-    if (move===3){
+    if (move===30){
       stars[2].firstElementChild.classList.remove("fa-star");
       star-=1;
     }
-    if (move===4){
+    if (move===40){
       stars[1].firstElementChild.classList.remove("fa-star");
       star-=1;
     }
