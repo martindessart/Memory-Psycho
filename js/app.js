@@ -1,77 +1,95 @@
-/*
- * Create a list that holds all of your cards
- */
- //Some variables
+
+ //Initialize variables
+
+//overlay page
 const start_overlay=document.querySelector('#overlay');
+//liste of cards
 const liste=document.querySelectorAll('.card');
+//deck of cards
 const deck=document.querySelector('.deck');
+//number of movements
 const moves=document.querySelector('.moves');
-let arr = [];
-let selectedCard = [];
+//number of stars
+const stars=document.querySelectorAll(".stars");
+//reset button
+const restart = document.querySelector(".reset");
+//timer
+const counter = document.querySelector(".timer");
+//result div
+const result = document.querySelector("#results");
+//play again button
+const reload=document.querySelector("#reload");
+//msg for time
+const message_time = document.querySelector("#message_time");
+//msg for number of moves
+const message_move = document.querySelector("#message_move");
+//msg for number of stars
+const message_star = document.querySelector("#message_star");
+//msg for result of the party
+const message_resu = document.querySelector("#message_resu");
+
+//array of cards
+let arr=[];
+//div of the card selected
+let divCard=[];
+//array of selected cards
 let openCard=[];
-let openProp=[];
+//alt attribute of the cards
+let openAlt=[];
+//number of moves
+let move=0;
+//number of pairs of cards found
+let cardNumber=0;
+//time of playing
+let time=0;
+//seconds of playing
+let seconds=0;
+//minutes of playing
+let minutes=0;
+//number of stars at the beginning
+let star=5;
 
+// FUNCTION OVERLAY
+function on() {
+    document.getElementById("overlay").style.display = "block";
+}
+function off() {
+    document.getElementById("overlay").style.display = "none";
+}
 
-
-//Waiting for the first click
+//OVERLAY EVENT
 start_overlay.addEventListener('click', function(){
-  startin();
-  //Shuffle the array
-  shuffle(arr);
-  deckPuttin();
+  starting();
 })
 
-//On the game
-deck.addEventListener('click', function(event){
-  if (event.target.nodeName === 'IMG') { // to change with 'DIV' if you hide the img
-  let parentCard=event.target.parentNode; // get the parent Node
-  event.target.classList.add("frontflip"); // flip effect
-  //visib=parentCard.children[1].children[0];
-  //console.log(visib);
-  //visib.style.visibility= "visible";
-  console.log(parentCard);
-  altCard=parentCard.children[0].alt; // get the alt attribute
-  cardProp=parentCard.parentNode;
-  openProp.push(cardProp); // put the card in an array
-  openCard.push(altCard); // put the alt attribute in an array
-  console.log(openCard);
-        if (openCard.length !== 'undefined' && openCard.length > 1) { // if user selected 2 cards
-            if (openCard[0]===openCard[1]) { // if they have the same alt
-              console.log(cardProp);
-              openProp[0].classList="card match cardwin"; //change class
-              openProp[1].className="card match cardwin"; // change class
-              openProp=[]; // clear array
-              openCard=[]; // clear array
-            }
-            else { //if different
-              openProp[0].className="card front backflip"; // go back to the initial position
-              openProp[1].className="card front backflip"; // go back to the initial position
-              openProp=[];
-              openCard=[];
-            }
-          }
-          else { // if only one card is selected
-            cardProp.className="card open"; // change class
-          }
-      }});
-
-//FUNCTION STARTIN
-function startin(){
-  //Define the cards style
-  const image=document.getElementsByTagName('img');
-  let arrImage = Array.from(image);
-
-  for (i=0;i<arrImage.length;i++){
-    //arrImage[i].style.visibility="visible";
-    //arrImage[i].className="hiddin";
-    console.log(arrImage[i]);
+//FUNCTION STARTING
+function starting(){
+  //Take the liste of cards
+  for (let i = 0; i < liste.length; i++) {
+   arr[i] = liste[i];
+  };
+  //Suffle the cards
+  //console.log(arr);
+  shuffle(arr);
+  //Add cards on the HTML
+  for (let ar of arr) {
+    deck.appendChild(ar);
   }
   //Movement counter
-  moves.textContent='15';
-  //Get every card into an array
-  for (let i = 0, ref = arr.length = liste.length; i < ref; i++) {
-   arr[i] = liste[i];
-  }
+  moves.textContent='0';
+  //Number of cards found
+  cardNumber=0;
+  //Number of movements
+  move=0;
+  //Set the time
+  time=setInterval(function() {
+		seconds++;
+			if (seconds === 60) {
+				minutes++;
+				seconds = 0;
+			}
+		counter.innerHTML = minutes+":"+seconds;
+	}, 1000);
 }
 
 // FUNCTION SHUFFLE from http://stackoverflow.com/a/2450976
@@ -87,31 +105,176 @@ function shuffle(array) {
     return array;
 }
 
-//FUNCTION DECK PUTTING
-function deckPuttin(){
-  //Add cards on the HTML
-  for (i=0; i<arr.length; i++) {
-    let nouvelleCard=arr[i];
-    deck.appendChild(nouvelleCard);
+//restart the game
+restart.addEventListener('click', reset);
+//play again
+reload.addEventListener('click', reset);
+
+//FUNCTION RESET
+function reset(){
+  //hide the result part
+  result.classList=("hide");
+  //stop the time
+  clearInterval(time);
+  seconds=0;
+  minutes=0;
+  counter.innerHTML = minutes+":"+seconds;
+  //console.log(openCard);
+  //reinitialize the card position
+  for (i=0;i<liste.length;i++){
+    liste[i].children[1].classList=('back');
+    //console.log(liste[i].children[1]);
+  }
+  //reset the number of stars
+  for (i=0; i<5;i++){
+    const newStar=document.createElement("li");
+    stars[i].firstElementChild.classList.add("fa-star");
+    console.log("yoyo");
+  }
+  on();
+}
+
+//CARD EVENT
+deck.addEventListener('click', function(event){
+  //select only one card
+  if (event.target.nodeName === 'DIV') {
+  moving();
+  //select the target
+  divCard=event.target;
+  flip();
+}
+})
+
+//MOVING FUNCTION
+function moving(){
+  //end the game if all moves are done
+  if (move===40){
+    stars[0].firstElementChild.classList.remove("fa-star");
+    loseGame();
+  }
+  else {
+    //update the movements
+    move=move+1;
+    moves.textContent=move;
+    //console.log("tu as fait "+move+" coup(s)");
+    //take off stars for numbers of move
+    if (move===1){
+      stars[4].firstElementChild.classList.remove("fa-star");
+      star-=1;
+    }
+    if (move===2){
+      stars[3].firstElementChild.classList.remove("fa-star");
+      star-=1;
+    }
+    if (move===3){
+      stars[2].firstElementChild.classList.remove("fa-star");
+      star-=1;
+    }
+    if (move===4){
+      stars[1].firstElementChild.classList.remove("fa-star");
+      star-=1;
+    }
   }
 }
 
+//FUNCTION LOSEGAME
+function loseGame(){
+  //display some bad messages :(
+    message_resu.textContent="You lose!";
+    message_time.textContent="You lose "+minutes+" minutes and "+seconds+" seconds of your life, congratulations!";
+    message_move.textContent="You also had to click "+move+" times with your mouse.";
+    message_star.textContent="You have "+star+" stars remaining but no worries, you can start again!";
+    //reveal the result part
+    result.classList=("show");
+    //hide the other part
+    document.body.style.overflow = 'hidden';
+}
 
-/*
- * set up the event listener for a card. If a card is clicked:
- *  - display the card's symbol (put this functionality in another function that you call from this one)
- *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
- *  - if the list already has another card, check to see if the two cards match
- *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
- *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)
- *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
- *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
- */
+//FUNCTION FLIP
+function flip(){
+  //add flip class to the selected card
+  divCard.classList.add("flip");
+  // get the alt attribute
+  altCard=divCard.children[0].alt;
+  //console.log(altCard);
+  goToOpen();
+}
 
- // FUNCTION OVERLAY
- function on() {
-     document.getElementById("overlay").style.display = "block";
- }
- function off() {
-     document.getElementById("overlay").style.display = "none";
- }
+//FUNCTION GOTOOPEN
+function goToOpen(){
+  // put the card in an array
+  openCard.push(divCard);
+  //console.log(openCard.length);
+  // put the alt attribute in an array
+  openAlt.push(altCard);
+  //when two cards are selected
+  if (openCard.length===2){
+  comparaison();
+  }
+}
+
+//FUNCTION COMPARAISON
+function comparaison(){
+  //avoid clicks
+  document.body.style.pointerEvents = "none";
+  // if user selected 2 cards
+  if (openAlt.length !== 'undefined' && openAlt.length > 1) {
+      // if they have the same alt attribute
+      if (openAlt[0]===openAlt[1]) {
+        match();
+      }
+      else { //if different
+        dismatch();
+      }
+    }
+}
+
+//FUNCTION MATCH
+function match(){
+  //console.log("Ca match ");
+  //update the class of the cards
+  openCard[0].classList.add("card", "match");
+  openCard[1].classList.add("card", "match");
+  // clear array
+  openCard=[];
+  openAlt=[];
+  cardNumber+=1;
+  //console.log("You already pick "+cardNumber+" cards!");
+  //if all cards are found
+  if (cardNumber === 8){
+    winGame();
+  }
+  //put back the click option
+  document.body.style.pointerEvents = "auto";
+}
+
+//FUNCTION WINGAME
+function winGame(){
+  //take time to appreciate the victory
+  setTimeout(function(){
+  //display some good messages ! :)
+    message_resu.textContent="You won!";
+    message_time.textContent="You lose "+minutes+" minutes and "+seconds+" seconds of your life, congratulations!";
+    message_move.textContent="You also had to click "+move+" times with your mouse.";
+    message_star.textContent="But no worries, you also won "+star+" beautiful stars!";
+    //reveal the result part
+    result.classList=("show");
+    //hide the other part
+    document.body.style.overflow = 'hidden';
+  }, 1500);
+}
+
+//FUNCTION DISMATCH
+function dismatch(){
+  setTimeout(function(){
+  //console.log("Ca match pas ");
+  // go back to the initial position
+  openCard[0].classList=("card");
+  openCard[1].classList=("card");
+  // clear array
+  openCard=[];
+  openAlt=[];
+  //put back the click option
+  document.body.style.pointerEvents = "auto";
+}, 1000);
+}
